@@ -1,5 +1,8 @@
 import 'package:examen_repaso/themes/themes.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class Register extends StatelessWidget {
   Register({Key? key}) : super(key: key);
@@ -49,16 +52,20 @@ class Register extends StatelessWidget {
                           textFormFieldEspace(),
                           createTextFormField("Confirmar Contraseña",
                               confirmPasswordCtrl, 4, true),
-                              ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  NavigateToLogin(context);
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.black, onPrimary: Colors.white),
-                              child: Text("Registro"),
-                            ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    addUser(mailCtrl, passwordCtrl);
+                                    NavigateToLogin(context);
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.black, onPrimary: Colors.white,),
+                                child: Text("Registro"),
+                                                          ),
+                              ),
                         ],
                       ),
                     ),
@@ -98,8 +105,8 @@ class Register extends StatelessWidget {
             return null;
           }
         } else if (numberOfTextFormField == 3) {
-          if (value!.length <= 3) {
-            return "";
+          if (value!.length < 6) {
+            return "La contraseña debe tener al menos 6 caracteres";
           } else if (value.length > 10) {
             return "La contraseña no puede tener más de 10 caracteres";
           } else {
@@ -142,4 +149,7 @@ class Register extends StatelessWidget {
     );
   }
 
+  void addUser(TextEditingController emailCtrl, TextEditingController passwordCtrl) {
+     FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailCtrl.text, password: passwordCtrl.text);  
+  }
 }
